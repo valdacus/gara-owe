@@ -1,29 +1,52 @@
 import tkinter as tk
 from tkinter import ttk
+import sqlite3
 
-class DataDisplayWindow:
-    def __init__(self, root, data_list):
+class DataDisplayWindow(tk.Frame):
+    def __init__(self, root, return_callback):
+        super().__init__(root)
         self.root = root
         self.root.title("Wyświetlanie Danych")
 
-        self.data_list = data_list
-
         # Dodaj elementy do okna wyświetlania danych
-        self.tree = ttk.Treeview(root, columns=("Data"))
-        self.tree.heading("#0", text="ID")
-        self.tree.heading("Data", text="Dane")
+        self.tree = ttk.Treeview(self, columns=("Imię", "Nazwisko", "Telefon", "VIN", "Szczegóły", "Opis"), show="headings")
 
-        self.button_return = tk.Button(root, text="Powrót", command=self.return_to_data_entry_window)
+#         self.tree.heading("ID", text="ID")
+        self.tree.heading("Imię", text="Imię")
+        self.tree.heading("Nazwisko", text="Nazwisko")
+        self.tree.heading("Telefon", text="Telefon")
+        self.tree.heading("VIN", text="VIN")
+        self.tree.heading("Szczegóły", text="Szczegóły")
+        self.tree.heading("Opis", text="Opis")
+
+        self.button_return = tk.Button(self, text="Powrót", command=return_callback)
 
         # Rozmieszczenie elementów w oknie
-        self.tree.grid(row=0, column=0, padx=10, pady=10, columnspan=2)
-        self.button_return.grid(row=1, column=0, columnspan=2)
+        self.tree.pack(fill=tk.BOTH, expand=True)
+        self.button_return.pack()
 
-    def return_to_data_entry_window(self):
-        self.root.withdraw()
+        # Wczytaj dane do widoku
+        self.load_data()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    data_list = ["Dane 1", "Dane 2", "Dane 3"]  # Przykładowe dane
-    app = DataDisplayWindow(root, data_list)
-    root.mainloop()
+    def load_data(self):
+        connection = sqlite3.connect("app_data.db")
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT * FROM entries
+            WHERE date_deleted IS NULL
+        """)
+
+        data = cursor.fetchall()
+
+        for row in data:
+            self.tree.insert("", "end", values=row)
+
+        connection.close()
+
+    def show(self):
+        self.pack(fill=tk.BOTH, expand=True)
+        self.root.title("Wyświetlanie Danych")
+
+    def hide(self):
+        self.pack_forget()

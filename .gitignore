@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+
+# db
+db
+*.db
+
+# IDEs and editors
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - PhpStorm
+.idea/*
+!.idea/runConfigurations
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Env
+.env
+
+
+__pycache__
